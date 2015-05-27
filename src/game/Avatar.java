@@ -13,20 +13,19 @@ import javafx.util.Duration;
 
 public class Avatar extends Animation{
 	SequentialTransition seq;
-	double startHeight = 180, jumpVelocity = 40;
+	static int startHeight = 180;
+	double jumpVelocity = 30;
 	private MediaPlayer player;
 	private Media m;
 	
-	public Avatar(String imageFile) {
-		super(imageFile);
-		img.xProperty().set(180);
-		img.yProperty().set(ground-startHeight);
+	public Avatar(String file) {
+		super(file,ground-startHeight,180);
 		String address = getClass().getResource("/flap.mp3").toString();
         m = new Media(address);
 	}
 	
 	public void reset(){
-		img.yProperty().set(ground-startHeight);
+		img.yProperty().set(Y);
 	}
 	
 	public void play(){
@@ -37,8 +36,8 @@ public class Avatar extends Animation{
 		seq.setOnFinished(new EventHandler<ActionEvent>(){
 			@Override
 			public void handle(ActionEvent event){
-				if(seq.getStatus().toString().equals("STOPPED")){
-					Main.gameEnd();	
+				if(seq.getStatus().toString().equals("STOPPED") && moving){
+					Main.end();	
 				}
 			}
 		});

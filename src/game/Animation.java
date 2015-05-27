@@ -5,21 +5,20 @@ import javafx.scene.image.ImageView;
 
 public class Animation {
 	protected ImageView img;
-	protected ImageView img1;
 	protected static boolean moving;
-	final static double difficulty = 4, ground = 330; 
+	final static int difficulty = 4, ground = 335; 
+	protected int Y, X;
+	protected String oFile;
 	
 	
-	public Animation(String file) {
-		String address = getClass().getResource("/" + file).toString();
+	public Animation(String file, int y, int x) {
+		oFile = file;
+		String address = getClass().getResource("/" + oFile).toString();
 		img = new ImageView(address);
-	}
-	
-	public Animation(String file, String file1){
-		String address = getClass().getResource("/" + file).toString();
-		img = new ImageView(address);
-		String address1 = getClass().getResource("/" + file1).toString();
-		img1 = new ImageView(address1);
+		Y = y;
+		X = x;
+		img.yProperty().set(Y);
+		img.xProperty().set(X);
 	}
 	
 	public ImageView getImg(){
@@ -45,9 +44,12 @@ public class Animation {
 	public void pause(){
 		
 	}
-
-	public void destroy() {
-		// TODO Auto-generated method stub
+	
+	public void stop(){
 		
+	}
+	
+	public void destroy() {
+		img = null;
 	}
 }

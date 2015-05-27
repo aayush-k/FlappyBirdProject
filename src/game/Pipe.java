@@ -7,21 +7,28 @@ import javafx.util.Duration;
 
 	public class Pipe extends Animation {
 		TranslateTransition obstacle;
-		private int Y, X;
-		private String oFile;
+		boolean b = true;
 		
 		public Pipe(final String file, int y, int x){
-			super(file);
-			oFile = file;
-			Y = y;
-			X = x;
-			img.yProperty().set(Y);
-			img.xProperty().set(X);
+			super(file,y,x);
 			obstacle = new TranslateTransition(new Duration(5000), img);
 			obstacle.setToX(-400);
 			obstacle.setCycleCount(Timeline.INDEFINITE);
 			obstacle.setInterpolator(new Interpolator(){
 				protected double curve(double t){
+					try{
+						double x_p = img.xProperty().get()-(400*t);
+						double y_p = img.yProperty().get();
+						if(Main.intersect(x_p,y_p)){
+							obstacle.stop();
+							Main.end();
+						}
+						if((int)x_p==178 && b){
+							Main.counter();
+							b = false;
+						}
+					} catch (NullPointerException a){
+					}
 					if(t==1){
 						Main.passOn(oFile,Y,X-400);
 						Y = ((int) (Math.random()*151))-275;
@@ -33,7 +40,7 @@ import javafx.util.Duration;
 		}
 		
 		public Pipe(final String file, int y, int x, boolean extention){
-			super(file);
+			super(file,y,x);
 			oFile = file;
 			Y = y;
 			X = x;
@@ -42,7 +49,24 @@ import javafx.util.Duration;
 			obstacle = new TranslateTransition(new Duration(5000), img);
 			obstacle.setToX(-400);
 			obstacle.setCycleCount(1);
-			obstacle.setInterpolator(Interpolator.LINEAR);
+			obstacle.setInterpolator(new Interpolator(){
+				protected double curve(double t){
+					try{
+						double x_p = img.xProperty().get()-(400*t);
+						double y_p = img.yProperty().get();
+						if(Main.intersect(x_p,y_p)){
+							obstacle.stop();
+							Main.end();
+						}
+						if((int)x_p==178 && b){
+							Main.counter();
+							b = false;
+						}
+					} catch (NullPointerException a){
+					}
+					return t;
+				}
+			});
 		}
 		
 		public void play(){
@@ -58,9 +82,13 @@ import javafx.util.Duration;
 			obstacle.pause();
 		}
 		
+		public void stop(){
+			obstacle.stop();
+		}
+		
 		public void destroy(){
 			obstacle.stop();
 			obstacle = null;
-			img=null;
+			super.destroy();
 		}
 	}
