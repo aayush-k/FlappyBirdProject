@@ -1,178 +1,141 @@
 package game;
-import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
-import javafx.animation.TranslateTransition;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
-//import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
-import javafx.util.Duration;
-
-/*TODO: Possibly use below code to make a more instanteous stop for the background animation when the bird hits the ground
- *	while(moving){
- 		if(flappy.yProperty().get()==375){
- 			backgroundMove.stop();
-			moving=false;
-		}
-	}
- *
- * HANDY CALCULATIONS:
- * y(t) = -0.5*g*t^2 + v_0*t + y_0
- * h = -4.9t^2 + v_0*t + h_0
- * 
- * 0 = 4.9t^2 + fallHeight
- * sqrt(fallHeight/4.9)
- * 
- * v(t) = -g*t + v_0
- * 0 = -9.8*t + v_0
- * v_0 = 9.8*t
- */
 
 public class Main extends Application{
+	private static Animation scenery, ground, avatar,pipe1,pipe2,pipe3,pipe4;;
+	private static int counter = 0;
+	private static UIButton start2, restart2;
+	private static UIImage getReady, gameOver, instructions;
 	
-	private ImageView bkgrd = null ;
-	private static ImageView flappy = null ;
-	private Button button = null;
-	private MediaPlayer player = null;
-	private Group root = null;
-	static boolean moving = true;
-	TranslateTransition backgroundMove = null;
-	final static double ground = 375;
-	static double startHeight = 180; //initial height of bird
-	final static double jumpVelocity = 40; //v_0 at which bird jumps up from current location (meters/second)
-	final static double jumpDuration = jumpVelocity / 9.8; //calculation for jump duration (see above)
-	final static double jumpHeight = jumpVelocity * jumpDuration - (4.9 * jumpDuration * jumpDuration); //calculation for jump distance (see above)
-	static double fallHeight = 0; //INITIAL calculation for drop distance, gets redefined in start(Stage primaryStage)
-	static double fallDuration = 0; //calculation for drop duration(see above)
-	//private Node flappy = null;
-	
-    private void addActionEventHandler(){
-    	 button.setOnAction(new EventHandler<ActionEvent>() {
+	private static Group root;
+
+	private void addActionEventHandler(){
+    	start2.getBtn().setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) { 
+        		Animation.setMotion(true);
+            	ground.play();
+            	scenery.play();
+            	start2.toggle(false);
+            	getReady.toggle(true);
+            	instructions.toggle(true);
+            	//wait, toggle getReady and jump
+            	avatar.play();
+            	pipe1.play();
+            	pipe2.play();
+            }
+        });
+    	restart2.getBtn().setOnAction(new EventHandler<ActionEvent>() { //restart button only appears at game over
              @Override
-             public void handle(ActionEvent event) { 
-             	flight(false);
-             	background();
-             	button.disarm();
-             	button.setVisible(false);
-             }
-         });
+             public void handle(ActionEvent event) {
+            	 restart2.toggle(false);
+            	 gameOver.toggle(false);
+            	 avatar.reset();
+            	 start2.toggle(true);
+             	}
+    	});
     }
     
     private void addMouseEventHandler(){
     	root.onMouseClickedProperty().set(new EventHandler<MouseEvent>() {
     		public void handle(MouseEvent event) {
-    			flight(true);
+    			if(Animation.getMotion()){
+    				getReady.toggle(false);
+    				instructions.toggle(false);
+    				avatar.play();
+    			}
     		}
         });
     }
-    
-    private void background(){
-    	backgroundMove = new TranslateTransition(new Duration(2000), bkgrd);
-    	backgroundMove.setToX(-400);
-    	backgroundMove.setInterpolator(Interpolator.LINEAR);
-    	backgroundMove.setCycleCount(Timeline.INDEFINITE);
-    	backgroundMove.play();
-    }
-    
-    private void flight(boolean initialVelocity){
-    	Timeline timeline = new Timeline();
-    	//debugPrint("PreMovement Stage");
-
-    	if(initialVelocity){
-			KeyValue rise = new KeyValue(flappy.yProperty(), flappy.yProperty().get() - jumpHeight, new Interpolator() {
-    			protected double curve(double t) { // t goes 0 to 1,
-    				double cTime = jumpDuration*t; //in sec the time elapsed
-    				double cJump = (jumpVelocity*cTime)-(4.9*cTime*cTime); //current height of the bird
-    				double c = (cJump/jumpHeight);
-    				return c; //convert to decimal progress from 0 to 1
-    			}
-            });
-        	KeyFrame birdRise = new KeyFrame(Duration.seconds(jumpDuration/5), rise);
-        	timeline.getKeyFrames().add(birdRise);
-            player.play();
-            //debugPrint("After Jump Stage");
-    	}
-    	KeyValue fall = new KeyValue(flappy.yProperty(), ground, new Interpolator() {
-			protected double curve(double t) {
-				double cTime = fallDuration*t; //in sec the time elapsed
-				double cDrop = (4.9*cTime*cTime); // distance dropped
-				double c = (cDrop/fallHeight);
-				return c; //convert to decimal progress
-			}
-        }); 
-    	KeyFrame birdFall = new KeyFrame(Duration.seconds(fallDuration/3), fall);
-    	timeline.getKeyFrames().add(birdFall);
-        timeline.play();
-        if(flappy.yProperty().get()==375){
-        	backgroundMove.stop();
-        }
-        //debugPrint("After Fall Stage");
-    }
 	
-    public static void debugPrint(String stage){
-		System.out.println("\n"+stage);
-		System.out.println("Fall Height: " + fallHeight);
-		System.out.println("Fall Duration: " + fallDuration);
-		System.out.println("Current Height: " + flappy.yProperty().get());
-	}
+    public static void passOn(String file, int y, int x){ //secondary phase of each pipe animation
+    	counter++;
+    	if(counter%2==1){
+    		pipe3 = new Pipe(file,y,x,true);
+        	pipe3.play();
+        	root.getChildren().add(pipe3.getImg());
+    	} else {
+    		pipe4 = new Pipe(file,y,x,true);
+        	pipe4.play();
+        	root.getChildren().add(pipe4.getImg());
+    	}
+    }
+    
+    public static void gameEnd(){
+    	Animation.setMotion(false);
+       	//scrap current pipe objects and get a clean slate
+    	root.getChildren().clear();
+    	pipe1.destroy();pipe2.destroy();
+    	root.getChildren().addAll(scenery.getImg(),ground.getImg(),avatar.getImg(),
+    			start2.getBtn(), restart2.getBtn(),
+    			getReady.getImg(), gameOver.getImg(), instructions.getImg());
+    	//reinitialize new, unused pipe objects
+    	int top1 = ((int) (Math.random()*151))-275; //-95 to -270
+    	pipe1 = new Pipe("obstacle.png",top1,548);
+    	int top2 = ((int) (Math.random()*151))-275; //-95 to -270
+    	pipe2 = new Pipe("obstacle.png",top2,748);
+    	root.getChildren().addAll(pipe1.getImg(), pipe2.getImg());
+    	//game over screen components:
+   		ground.pause();
+    	scenery.pause();
+    	restart2.toggle(true);
+    	getReady.toggle(false);
+    	instructions.toggle(false);
+    	gameOver.toggle(true);
+    }
     
     @Override
-	public void start(Stage primaryStage) throws Exception {
-		//Create a Group 
-		root = new Group();
+   	public void start(Stage primaryStage){
+   		//Create a Group
+   		root = new Group();
+   		
+   		//TODO 1: add background
+   		scenery = new Scenery("background2.png");
+   		ground = new Ground("ground2.png");
+   		avatar = new Avatar("flappy.png");
+   		pipe1 = new Pipe("obstacle.png", ((int) (Math.random()*151))-275, 548);
+   		pipe2 = new Pipe("obstacle.png",((int) (Math.random()*151))-275,748);
+
+		//TODO 3: add UI
+		start2 = new UIButton("clickrun.png",60,60);
+		restart2 = new UIButton("Restart",170,150);
+		instructions = new UIImage("instructions.png",130,150);
 		
-		//TODO 1: add background
-		//String bAddress = getClass().getResource("/background2.png").toString();
 		
-		bkgrd = new ImageView("background2.png");
+		getReady = new UIImage("getready.png",105,60);
 		
-		//TODO 2: add Flappy
-		flappy = new ImageView("flappy.png");
-		flappy.xProperty().set(180);
-		flappy.yProperty().set(ground-startHeight);
-		fallHeight = ground - flappy.yProperty().get();
-		fallDuration = Math.sqrt(fallHeight/4.9);
 		
-		//TODO 3: add Button
-		button = new Button("Start");
-		button.setLayoutX(175);
-		button.setLayoutY(175);
+		gameOver = new UIImage("gameover.png",110,60);
 		
-		//TODO 4: add Sound
-    	String address = getClass().getResource("/flap.mp3").toString();
-        Media m = new Media(address);
-        player = new MediaPlayer(m);
 		
-		//Add controls
-		root.getChildren().add( bkgrd );
-		root.getChildren().add( flappy );
-		root.getChildren().add( button);
+		root.getChildren().addAll(scenery.getImg(),ground.getImg(),avatar.getImg(),
+				pipe1.getImg(), pipe2.getImg(),
+				start2.getBtn(), restart2.getBtn(),
+				getReady.getImg(), gameOver.getImg(), instructions.getImg());
+
+		restart2.toggle(false);
+		instructions.toggle(false);
+		getReady.toggle(false);
+		gameOver.toggle(false);
 		
-		//TODO 4: add action handler to the button
+		//TODO 4: add event handlers
 		addActionEventHandler();
-		
-		//TODO 5: add mouse handler to the scene
 		addMouseEventHandler();
 		
-		//Create scene and add to stage
+		//Create scene and add to stage		
 		Scene scene = new Scene(root, 400, 400);
 		primaryStage.setScene(scene);
 		primaryStage.show();
-		
-	}
-
+    }
+    
 	public static void main(String[] args) {
 		Application.launch(args);
 	}
-
 }
