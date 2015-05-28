@@ -65,6 +65,7 @@ import javafx.util.Duration;
 		}
 		
 		public void destroy(){
+			img.setVisible(false);
 			obstacle.stop();
 			obstacle = null;
 			super.destroy();
