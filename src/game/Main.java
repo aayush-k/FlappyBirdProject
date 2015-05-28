@@ -122,17 +122,17 @@ public class Main extends Application{
 		gameOver = new UIImage("gameover.png",110,60);
 		
 		score = new Text("0");
-		score.setFont(new Font("Verdana", 30.0));
+		score.setFont(new Font("Calibri", 30.0));
 		score.setLayoutX(183);
 		score.setLayoutY(50);
 		
 		highScore = new Text("High Score: 0");
-		highScore.setFont(new Font("Verdana", 12.0));
+		highScore.setFont(new Font("Calibri", 12.0));
 		highScore.setLayoutX(5);
 		highScore.setLayoutY(15);
 		
 		levelID = new Text();
-		levelID.setFont(new Font("Verdana", 12.0));
+		levelID.setFont(new Font("Calibri", 12.0));
 		levelID.setLayoutX(180);
 		levelID.setLayoutY(15);
 		

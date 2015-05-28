@@ -50,8 +50,6 @@ import javafx.util.Duration;
 			}
 		}
 		
-		
-		
 		public void play(){
 			obstacle.play();
 		}

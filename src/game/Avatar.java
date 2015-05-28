@@ -19,7 +19,7 @@ public class Avatar extends Animation{
 	
 	public Avatar(String file, String m) {
 		super(file,ground-startHeight,180, m);
-		String address = getClass().getResource("/flap.mp3").toString();
+		String address = getClass().getResource("/nihao.mp3").toString();
         flap = new Media(address);
 	}
 	
@@ -68,6 +68,7 @@ public class Avatar extends Animation{
 		flight.getKeyFrames().add(birdFlight);
 		if(initialVelocity){
         	player = new MediaPlayer(flap);
+        	player.setRate(1.5);
         	player.play();
         }
 		return flight;

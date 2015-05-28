@@ -6,7 +6,7 @@ import javafx.scene.image.ImageView;
 public class Animation {
 	protected ImageView img;
 	protected static boolean moving;
-	protected static int sensitivity = 3, ground = 335, screenTime = 5000, jumpVelocity = 30;
+	protected static int sensitivity = 3, ground = 335, screenTime = 5000, jumpVelocity = 25;
 	protected int Y, X;
 	protected String oFile;
 	protected String message;
