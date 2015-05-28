@@ -14,14 +14,13 @@ import javafx.util.Duration;
 public class Avatar extends Animation{
 	SequentialTransition seq;
 	static int startHeight = 180;
-	double jumpVelocity = 30;
 	private MediaPlayer player;
-	private Media m;
+	private Media flap;
 	
-	public Avatar(String file) {
-		super(file,ground-startHeight,180);
+	public Avatar(String file, String m) {
+		super(file,ground-startHeight,180, m);
 		String address = getClass().getResource("/flap.mp3").toString();
-        m = new Media(address);
+        flap = new Media(address);
 	}
 	
 	public void reset(){
@@ -64,13 +63,11 @@ public class Avatar extends Animation{
 			}
 		});
 		double scaler = (initialVelocity)? 1.5:2.0;
-		Duration scaledTime = Duration.seconds(time/(difficulty*scaler));
+		Duration scaledTime = Duration.seconds(time/(sensitivity*scaler));
 		KeyFrame birdFlight = new KeyFrame(scaledTime, move);
 		flight.getKeyFrames().add(birdFlight);
-//		String movement = (initialVelocity)? "Jump":"Fall";
-//		System.out.println(movement + " from " + y_c + " to "+ target + "\n\tin " + scaledTime);
 		if(initialVelocity){
-        	player = new MediaPlayer(m);
+        	player = new MediaPlayer(flap);
         	player.play();
         }
 		return flight;

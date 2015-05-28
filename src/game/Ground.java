@@ -3,15 +3,14 @@ package game;
 import javafx.animation.Interpolator;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
-import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 public class Ground extends Animation{
 	TranslateTransition groundMove;
 	
-	public Ground(String file){
-		super(file, ground+25,0);
-		groundMove = new TranslateTransition(new Duration(5000), img);
+	public Ground(String file, String m){
+		super(file, ground+25,0,m);
+		groundMove = new TranslateTransition(new Duration(0.885*screenTime), img);
     	groundMove.setToX(-400);
     	groundMove.setInterpolator(new Interpolator(){
 			protected double curve(double t){
