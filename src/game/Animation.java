@@ -62,6 +62,7 @@ public class Animation {
 	}
 	
 	public void destroy() {
+		img.setVisible(false);
 		img = null;
 	}
 	
